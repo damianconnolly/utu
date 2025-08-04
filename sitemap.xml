@@ -78,6 +78,23 @@
     <priority>1.0</priority>
   </url>
 
+    <url>
+    <loc>https://upminstertownunited.co.uk/jamesoglethorpe</loc>
+    <lastmod>2025-08-04</lastmod>
+    <priority>0.3</priority>
+  </url>
+      <url>
+    <loc>https://upminstertownunited.co.uk/upminsterjuniorschool</loc>
+    <lastmod>2025-08-04</lastmod>
+    <priority>0.3</priority>
+  </url>
+
+      <url>
+    <loc>https://upminstertownunited.co.uk/emersonpark</loc>
+    <lastmod>2025-08-04</lastmod>
+    <priority>0.3</priority>
+  </url>
+
   <!-- Add more URLs for each team, news article, gallery page, etc. -->
 
 </urlset>
