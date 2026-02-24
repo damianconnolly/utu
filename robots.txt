@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /gallery
+Disallow: /events
+Disallow: /players
+Disallow: /single
+Disallow: /main
+
+Sitemap: https://upminstertownunited.co.uk/sitemap.xml

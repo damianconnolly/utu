@@ -90,15 +90,21 @@
   </url>
 
       <url>
-    <loc>https://upminstertownunited.co.uk/emersonpark</loc>
+      <loc>https://upminstertownunited.co.uk/emersonpark</loc>
     <lastmod>2025-10-02</lastmod>
     <priority>0.3</priority>
   </url>
-      <loc>https://upminstertownunited.co.uk/sponsors</loc>
+
+  <url>
+    <loc>https://upminstertownunited.co.uk/sponsors</loc>
     <lastmod>2025-10-01</lastmod>
     <priority>0.3</priority>
   </url>
 
-  <!-- Add more URLs for each team, news article, gallery page, etc. -->
+  <url>
+    <loc>https://upminstertownunited.co.uk/u11raptors</loc>
+    <lastmod>2025-10-01</lastmod>
+    <priority>0.4</priority>
+  </url>
 
 </urlset>
