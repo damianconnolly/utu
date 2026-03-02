@@ -133,63 +133,125 @@
         <div class="site-section">
             <div class="container">
                 <div class="row">
-                    <p>To contact our managers or coahces directly, please use their contact details found on the individual team pages.</p>
-                    <p>Our committee members' contact details are on the <a href="committee">Committee Members</a> page.</p>
-                    <p></p>
+                    <div class="col-12">
+                        <p>To contact our managers or coaches directly, please use their contact details found on the individual team pages.</p>
+                        <p>Our committee members' contact details are on the <a href="committee">Committee Members</a> page.</p>
+                    </div>
                 </div>
 
-                <div class="row">
-                    <p>For general enquiries, please email us at upminstertownunitedfc@gmail.com</p>
+                <div class="row mt-4">
+                    <div class="col-md-12 col-lg-7 mb-5">
+                        <h3 class="mb-4">Send Us a Message</h3>
 
+                        <div id="contact-alert" class="alert d-none" role="alert"></div>
+
+                        <form id="contact-form" novalidate>
+
+                            <div class="row form-group">
+                                <div class="col-md-12 mb-3 mb-md-0">
+                                    <label class="font-weight-bold" for="fullname">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="fullname" name="fullname" class="form-control" placeholder="Full Name" required>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    <label class="font-weight-bold" for="email">Email <span class="text-danger">*</span></label>
+                                    <input type="email" id="email" name="email" class="form-control" placeholder="Email Address" required>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    <label class="font-weight-bold" for="subject">Subject <span class="text-danger">*</span></label>
+                                    <input type="text" id="subject" name="subject" class="form-control" placeholder="Enter Subject" required>
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    <label class="font-weight-bold" for="message">Message <span class="text-danger">*</span></label>
+                                    <textarea name="message" id="message" cols="30" rows="5" class="form-control"
+                                              placeholder="Your message..." required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    <button type="submit" id="contact-submit" class="btn btn-primary py-2 px-4">
+                                        Send Message
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <div class="col-md-12 col-lg-4 offset-lg-1 mb-5">
+                        <h3 class="mb-4">Other Ways to Reach Us</h3>
+                        <p>For general enquiries you can also email us directly at <a href="mailto:upminstertownunitedfc@gmail.com">upminstertownunitedfc@gmail.com</a></p>
+                    </div>
                 </div>
-
-                <!--          <div class="col-md-12 col-lg-7 mb-5">
-
-
-
-                    <form action="#" class="contact-form">
-
-                        <div class="row form-group">
-                            <div class="col-md-12 mb-3 mb-md-0">
-                                <label class="font-weight-bold" for="fullname">Full Name</label>
-                                <input type="text" id="fullname" class="form-control" placeholder="Full Name">
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col-md-12">
-                                <label class="font-weight-bold" for="email">Email</label>
-                                <input type="email" id="email" class="form-control" placeholder="Email Address">
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col-md-12">
-                                <label class="font-weight-bold" for="email">Subject</label>
-                                <input type="text" id="subject" class="form-control" placeholder="Enter Subject">
-                            </div>
-                        </div>
-
-
-                        <div class="row form-group">
-                            <div class="col-md-12">
-                                <label class="font-weight-bold" for="message">Message</label>
-                                <textarea name="message" id="message" cols="30" rows="5" class="form-control"
-                                          placeholder="Say hello to us"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="row form-group">
-                            <div class="col-md-12">
-                                <input type="submit" value="Send Message" class="btn btn-primary py-2 px-4">
-                            </div>
-                        </div>
-
-
-                    </form>
-                </div> -->
-
 
             </div>
         </div>
+
+        <script>
+        (function () {
+            var form = document.getElementById('contact-form');
+            var submitBtn = document.getElementById('contact-submit');
+            var alert = document.getElementById('contact-alert');
+
+            function showAlert(message, type) {
+                alert.className = 'alert alert-' + type;
+                alert.textContent = message;
+                alert.classList.remove('d-none');
+                alert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            function hideAlert() {
+                alert.classList.add('d-none');
+            }
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                hideAlert();
+
+                var fullname = document.getElementById('fullname').value.trim();
+                var email = document.getElementById('email').value.trim();
+                var subject = document.getElementById('subject').value.trim();
+                var message = document.getElementById('message').value.trim();
+
+                if (!fullname || !email || !subject || !message) {
+                    showAlert('Please fill in all fields before sending.', 'warning');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+
+                fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullname: fullname, email: email, subject: subject, message: message })
+                })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        showAlert('Thank you! Your message has been sent. We will get back to you shortly.', 'success');
+                        form.reset();
+                    } else {
+                        showAlert(data.error || 'Something went wrong. Please try again.', 'danger');
+                    }
+                })
+                .catch(function () {
+                    showAlert('Could not send your message. Please check your connection and try again.', 'danger');
+                })
+                .finally(function () {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send Message';
+                });
+            });
+        })();
+        </script>
 
         <div class="footer">
             <div class="container">
