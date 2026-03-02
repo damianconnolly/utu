@@ -2,8 +2,8 @@
  * Cloudflare Pages Function: POST /api/send-email
  *
  * Required environment variables (set in Cloudflare Pages dashboard):
- *   SENDGRID_API_KEY   - Your SendGrid API key
- *   CONTACT_EMAIL_FROM - A verified sender address in your SendGrid account
+ *   MAILERSEND_API_KEY - Your MailerSend API token
+ *   CONTACT_EMAIL_FROM - A verified sender address on your MailerSend domain
  *
  * Optional environment variables:
  *   CONTACT_EMAIL_TO   - Recipient address (defaults to upminstertownunitedfc@gmail.com)
@@ -24,12 +24,12 @@ export async function onRequestPost(context) {
       return jsonResponse({ success: false, error: 'Please enter a valid email address.' }, 400);
     }
 
-    const apiKey = env.SENDGRID_API_KEY;
+    const apiKey = env.MAILERSEND_API_KEY;
     const fromEmail = env.CONTACT_EMAIL_FROM;
     const toEmail = env.CONTACT_EMAIL_TO || 'upminstertownunitedfc@gmail.com';
 
     if (!apiKey || !fromEmail) {
-      console.error('Missing SENDGRID_API_KEY or CONTACT_EMAIL_FROM environment variables');
+      console.error('Missing MAILERSEND_API_KEY or CONTACT_EMAIL_FROM environment variables');
       return jsonResponse({ success: false, error: 'Email service is not configured. Please contact us directly.' }, 500);
     }
 
@@ -42,37 +42,28 @@ export async function onRequestPost(context) {
       message,
     ].join('\n');
 
-    const sgResponse = await fetch('https://api.sendgrid.com/v3/mail/send', {
+    const msResponse = await fetch('https://api.mailersend.com/v1/email', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        personalizations: [
-          {
-            to: [{ email: toEmail }],
-          },
-        ],
         from: { email: fromEmail, name: 'UTU Website' },
+        to: [{ email: toEmail }],
         reply_to: { email: email.trim(), name: fullname.trim() },
         subject: `[UTU Website] ${subject.trim()}`,
-        content: [
-          {
-            type: 'text/plain',
-            value: emailBody,
-          },
-        ],
+        text: emailBody,
       }),
     });
 
-    // SendGrid returns 202 Accepted on success
-    if (sgResponse.status === 202) {
+    // MailerSend returns 202 Accepted on success
+    if (msResponse.status === 202) {
       return jsonResponse({ success: true });
     }
 
-    const errorText = await sgResponse.text();
-    console.error('SendGrid error', sgResponse.status, errorText);
+    const errorText = await msResponse.text();
+    console.error('MailerSend error', msResponse.status, errorText);
     return jsonResponse({ success: false, error: 'Failed to send your message. Please try again later.' }, 502);
   } catch (err) {
     console.error('Unexpected error in send-email function:', err);
