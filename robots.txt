@@ -3,7 +3,6 @@ Allow: /
 
 Disallow: /gallery
 Disallow: /events
-Disallow: /players
 Disallow: /single
 Disallow: /main
 
