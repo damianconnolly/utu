@@ -1,0 +1,23 @@
+index.html
+  bdba2c5d8a9116f2 216-249
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "b0ef8cc5c0ce75bbe65a152b6c2068b700b0e67f",
+  "prompts": {
+    "bdba2c5d8a9116f2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bf9f5b13ffeHRdDwlP2Daczym",
+        "model": "cloudflare-workers-ai/@cf/moonshotai/kimi-k2.6"
+      },
+      "human_author": "Damian Connolly",
+      "messages": [],
+      "total_additions": 34,
+      "total_deletions": 1,
+      "accepted_lines": 34,
+      "overriden_lines": 0
+    }
+  }
+}
