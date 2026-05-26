@@ -13,50 +13,56 @@
   </url>
 
   <url>
-    <loc>https://upminstertownunited.co.uk/u9wolves</loc>
-    <lastmod>2025-10-01</lastmod>
+    <loc>https://upminstertownunited.co.uk/u10wolves</loc>
+    <lastmod>2026-05-26</lastmod>
     <priority>0.4</priority>
   </url>
 
     <url>
-    <loc>https://upminstertownunited.co.uk/u10black</loc>
-    <lastmod>2025-10-01</lastmod>
+    <loc>https://upminstertownunited.co.uk/u11black</loc>
+    <lastmod>2026-05-26</lastmod>
     <priority>0.4</priority>
   </url>
 
     <url>
-    <loc>https://upminstertownunited.co.uk/u10white</loc>
-    <lastmod>2025-10-01</lastmod>
+    <loc>https://upminstertownunited.co.uk/u11white</loc>
+    <lastmod>2026-05-26</lastmod>
     <priority>0.4</priority>
   </url>
 
   <url>
-    <loc>https://upminstertownunited.co.uk/u14blue</loc>
-    <lastmod>2026-04-17</lastmod>
+    <loc>https://upminstertownunited.co.uk/u12raptors</loc>
+    <lastmod>2026-05-26</lastmod>
     <priority>0.4</priority>
   </url>
 
   <url>
-    <loc>https://upminstertownunited.co.uk/u14claret</loc>
-    <lastmod>2025-10-01</lastmod>
+    <loc>https://upminstertownunited.co.uk/u15claret</loc>
+    <lastmod>2026-05-26</lastmod>
     <priority>0.4</priority>
   </url>
 
   <url>
-    <loc>https://upminstertownunited.co.uk/u15eagles</loc>
-    <lastmod>2025-10-06</lastmod>
+    <loc>https://upminstertownunited.co.uk/u15blue</loc>
+    <lastmod>2026-05-26</lastmod>
     <priority>0.4</priority>
   </url>
 
     <url>
-    <loc>https://upminstertownunited.co.uk/u16blue</loc>
-    <lastmod>2025-10-06</lastmod>
+    <loc>https://upminstertownunited.co.uk/u16eagles</loc>
+    <lastmod>2026-05-26</lastmod>
     <priority>0.4</priority>
   </url>
 
     <url>
-    <loc>https://upminstertownunited.co.uk/u16stripes</loc>
-    <lastmod>2025-10-06</lastmod>
+    <loc>https://upminstertownunited.co.uk/u17stripes</loc>
+    <lastmod>2026-05-26</lastmod>
+    <priority>0.4</priority>
+  </url>
+
+    <url>
+    <loc>https://upminstertownunited.co.uk/u17blue</loc>
+    <lastmod>2026-05-26</lastmod>
     <priority>0.4</priority>
   </url>
 
@@ -99,12 +105,6 @@
     <loc>https://upminstertownunited.co.uk/sponsors</loc>
     <lastmod>2025-10-01</lastmod>
     <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://upminstertownunited.co.uk/u11raptors</loc>
-    <lastmod>2026-04-20</lastmod>
-    <priority>0.4</priority>
   </url>
 
 </urlset>
