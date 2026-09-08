@@ -127,78 +127,62 @@
           return name.replace(/Upminster Town United/i, '').trim() || name;
         },
 
-        async loadFixtures() {
-          this.loading = true;
-          this.fixtures = [];
+async loadFixtures() {
+  this.loading = true;
+  this.fixtures = [];
 
-          for (const src of this.sources) {
-            try {
-              // Wrap fetch in a CORS proxy to bypass cross-origin browser restrictions
-              const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(src.url)}`;
-              const res = await fetch(proxyUrl);
-              const data = await res.json();
-              
-              if (data.contents) {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data.contents, 'text/html');
-                const rows = doc.querySelectorAll('tr');
+  // Replace with your actual Cloudflare Worker URL
+  const PROXY_BASE = 'https://upminster-fixtures-api.YOUR-SUBDOMAIN.workers.dev?url=';
 
-                rows.forEach((row, i) => {
-                  const cells = Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim());
-                  
-                  if (cells.length >= 3) {
-                    const rowText = cells.join(' ');
-                    if (rowText.toLowerCase().includes('upminster')) {
-                      const dateStr = cells[0] || 'TBC';
-                      const homeTeam = cells[1] || cells[2] || '';
-                      const timeOrScore = cells[2] || cells[3] || 'VS';
-                      const awayTeam = cells[3] || cells[4] || '';
-                      const venue = cells[5] || 'Ground TBC';
+  for (const src of this.sources) {
+    try {
+      const proxyUrl = `${PROXY_BASE}${encodeURIComponent(src.url)}`;
+      const res = await fetch(proxyUrl);
+      const htmlText = await res.text();
 
-                      const isHome = homeTeam.toLowerCase().includes('upminster');
+      if (htmlText) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        const rows = doc.querySelectorAll('tr');
 
-                      this.fixtures.push({
-                        id: `${src.league}-${i}-${dateStr}`,
-                        league: src.league,
-                        date: dateStr,
-                        homeTeam,
-                        awayTeam,
-                        timeOrScore,
-                        venue,
-                        upminsterTeam: isHome ? this.cleanTeamName(homeTeam) : this.cleanTeamName(awayTeam),
-                        isHome
-                      });
-                    }
-                  }
-                });
-              }
-            } catch (err) {
-              console.error(`Error loading ${src.league}:`, err);
+        rows.forEach((row, i) => {
+          const cells = Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim());
+
+          if (cells.length >= 3) {
+            const rowText = cells.join(' ');
+            if (rowText.toLowerCase().includes('upminster')) {
+              const dateStr = cells[0] || 'TBC';
+              const homeTeam = cells[1] || cells[2] || '';
+              const timeOrScore = cells[2] || cells[3] || 'VS';
+              const awayTeam = cells[3] || cells[4] || '';
+              const venue = cells[5] || 'Ground TBC';
+
+              const isHome = homeTeam.toLowerCase().includes('upminster');
+
+              this.fixtures.push({
+                id: `${src.league}-${i}-${dateStr}`,
+                league: src.league,
+                date: dateStr,
+                homeTeam,
+                awayTeam,
+                timeOrScore,
+                venue,
+                upminsterTeam: isHome ? this.cleanTeamName(homeTeam) : this.cleanTeamName(awayTeam),
+                isHome
+              });
             }
           }
-
-          this.loading = false;
-        },
-
-        get uniqueTeams() {
-          const teams = this.fixtures.map(f => f.upminsterTeam).filter(Boolean);
-          return [...new Set(teams)].sort();
-        },
-
-        get uniqueVenues() {
-          const venues = this.fixtures.map(f => f.venue).filter(Boolean);
-          return [...new Set(venues)].sort();
-        },
-
-        get filteredFixtures() {
-          return this.fixtures.filter(f => {
-            const matchTeam = !this.selectedTeam || f.upminsterTeam === this.selectedTeam;
-            const matchLeague = !this.selectedLeague || f.league === this.selectedLeague;
-            const matchVenue = !this.selectedVenue || f.venue === this.selectedVenue;
-            return matchTeam && matchLeague && matchVenue;
-          });
-        }
+        });
       }
+    } catch (err) {
+      console.error(`Error loading ${src.league}:`, err);
+    }
+  }
+
+  this.loading = false;
+}
+
+
     }
   </script>
 </body>
