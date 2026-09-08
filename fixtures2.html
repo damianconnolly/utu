@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upminster Town United FC - Fixtures</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans min-h-screen">
+
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    
+    <!-- Header -->
+    <div class="border-b pb-6 mb-8">
+      <h1 class="text-3xl font-extrabold text-blue-900">Upminster Town United FC</h1>
+      <p class="text-gray-600 mt-1">Official Fixtures Hub</p>
+    </div>
+
+    <!-- League Sections -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- BCFA Youth League Widget -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <h2 class="text-xl font-bold text-blue-900 mb-4 pb-2 border-b">BCFA Youth League</h2>
+        <div id="lts-widget-bcfa" class="min-h-[400px]">
+          <!-- FA Fulltime Embed -->
+          <iframe 
+            src="https://fulltime.thefa.com/display_fixture_list.html?selectedSeason=486141579&selectedClub=533106051" 
+            width="100%" 
+            height="500" 
+            frameborder="0" 
+            scrolling="auto"
+            class="rounded-lg border border-gray-100">
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Echo Youth League Widget -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <h2 class="text-xl font-bold text-blue-900 mb-4 pb-2 border-b">Echo Youth League</h2>
+        <div id="lts-widget-echo" class="min-h-[400px]">
+          <!-- FA Fulltime Embed -->
+          <iframe 
+            src="https://fulltime.thefa.com/display_fixture_list.html?selectedSeason=939968858&selectedClub=861410336" 
+            width="100%" 
+            height="500" 
+            frameborder="0" 
+            scrolling="auto"
+            class="rounded-lg border border-gray-100">
+          </iframe>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
