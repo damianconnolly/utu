@@ -24,6 +24,9 @@
       </div>
     </div>
 
+    <!-- Error Banner -->
+    <div x-show="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 text-sm" x-text="errorMessage"></div>
+
     <!-- Filters Section -->
     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
       
@@ -64,7 +67,7 @@
     <!-- Fixtures List -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       
-      <div x-show="loading" class="p-8 text-center text-gray-500">
+      <div x-show="loading" class="p-8 text-center text-gray-500 animate-pulse">
         Fetching live fixtures directly from FA Full-Time...
       </div>
 
@@ -106,10 +109,14 @@
     function fixturesApp() {
       return {
         loading: true,
+        errorMessage: '',
         fixtures: [],
         selectedTeam: '',
         selectedLeague: '',
         selectedVenue: '',
+
+        // EXACT WORKER ENDPOINT:
+        workerApiUrl: 'https://utufixtures.damianconnolly.workers.dev',
 
         sources: [
           {
@@ -127,62 +134,86 @@
           return name.replace(/Upminster Town United/i, '').trim() || name;
         },
 
-async loadFixtures() {
-  this.loading = true;
-  this.fixtures = [];
+        async loadFixtures() {
+          this.loading = true;
+          this.errorMessage = '';
+          this.fixtures = [];
 
-  // Replace with your actual Cloudflare Worker URL
-  const PROXY_BASE = 'https://utufixtures.damianconnolly.workers.dev/?url=';
+          for (const src of this.sources) {
+            try {
+              const targetUrl = `${this.workerApiUrl}?url=${encodeURIComponent(src.url)}`;
+              console.log('Fetching via Worker:', targetUrl);
 
-  for (const src of this.sources) {
-    try {
-      const proxyUrl = `${PROXY_BASE}${encodeURIComponent(src.url)}`;
-      const res = await fetch(proxyUrl);
-      const htmlText = await res.text();
+              const res = await fetch(targetUrl);
+              
+              if (!res.ok) {
+                throw new Error(`Worker returned status ${res.status}`);
+              }
 
-      if (htmlText) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, 'text/html');
-        const rows = doc.querySelectorAll('tr');
+              const htmlText = await res.text();
 
-        rows.forEach((row, i) => {
-          const cells = Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim());
+              if (htmlText) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+                const rows = doc.querySelectorAll('tr');
 
-          if (cells.length >= 3) {
-            const rowText = cells.join(' ');
-            if (rowText.toLowerCase().includes('upminster')) {
-              const dateStr = cells[0] || 'TBC';
-              const homeTeam = cells[1] || cells[2] || '';
-              const timeOrScore = cells[2] || cells[3] || 'VS';
-              const awayTeam = cells[3] || cells[4] || '';
-              const venue = cells[5] || 'Ground TBC';
+                rows.forEach((row, i) => {
+                  const cells = Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim());
 
-              const isHome = homeTeam.toLowerCase().includes('upminster');
+                  if (cells.length >= 3) {
+                    const rowText = cells.join(' ');
+                    if (rowText.toLowerCase().includes('upminster')) {
+                      const dateStr = cells[0] || 'TBC';
+                      const homeTeam = cells[1] || cells[2] || '';
+                      const timeOrScore = cells[2] || cells[3] || 'VS';
+                      const awayTeam = cells[3] || cells[4] || '';
+                      const venue = cells[5] || 'Ground TBC';
 
-              this.fixtures.push({
-                id: `${src.league}-${i}-${dateStr}`,
-                league: src.league,
-                date: dateStr,
-                homeTeam,
-                awayTeam,
-                timeOrScore,
-                venue,
-                upminsterTeam: isHome ? this.cleanTeamName(homeTeam) : this.cleanTeamName(awayTeam),
-                isHome
-              });
+                      const isHome = homeTeam.toLowerCase().includes('upminster');
+
+                      this.fixtures.push({
+                        id: `${src.league}-${i}-${dateStr}`,
+                        league: src.league,
+                        date: dateStr,
+                        homeTeam,
+                        awayTeam,
+                        timeOrScore,
+                        venue,
+                        upminsterTeam: isHome ? this.cleanTeamName(homeTeam) : this.cleanTeamName(awayTeam),
+                        isHome
+                      });
+                    }
+                  }
+                });
+              }
+            } catch (err) {
+              console.error(`Error loading ${src.league}:`, err);
+              this.errorMessage = `Failed to load fixtures: ${err.message}.`;
             }
           }
-        });
+
+          this.loading = false;
+        },
+
+        get uniqueTeams() {
+          const teams = this.fixtures.map(f => f.upminsterTeam).filter(Boolean);
+          return [...new Set(teams)].sort();
+        },
+
+        get uniqueVenues() {
+          const venues = this.fixtures.map(f => f.venue).filter(Boolean);
+          return [...new Set(venues)].sort();
+        },
+
+        get filteredFixtures() {
+          return this.fixtures.filter(f => {
+            const matchTeam = !this.selectedTeam || f.upminsterTeam === this.selectedTeam;
+            const matchLeague = !this.selectedLeague || f.league === this.selectedLeague;
+            const matchVenue = !this.selectedVenue || f.venue === this.selectedVenue;
+            return matchTeam && matchLeague && matchVenue;
+          });
+        }
       }
-    } catch (err) {
-      console.error(`Error loading ${src.league}:`, err);
-    }
-  }
-
-  this.loading = false;
-}
-
-
     }
   </script>
 </body>
