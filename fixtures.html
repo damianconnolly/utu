@@ -9,7 +9,7 @@
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans min-h-screen">
 
-  <div class="max-w-6xl mx-auto px-4 py-8" x-data="fixturesApp()" x-init="initData()">
+  <div class="max-w-6xl mx-auto px-4 py-8" x-data="fixturesApp()" x-init="loadFixtures()">
     
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between border-b pb-6 mb-6">
@@ -18,9 +18,8 @@
         <p class="text-gray-600 mt-1">Central Fixture Hub (BCFA & Echo Youth Leagues)</p>
       </div>
       <div class="mt-4 md:mt-0 text-right">
-        <span class="text-xs text-gray-500 block">Last Synced: <span x-text="lastUpdated || 'Loading...'"></span></span>
-        <button @click="fetchData(true)" class="mt-2 text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 px-3 py-1.5 rounded font-medium border border-blue-200">
-          Sync Now
+        <button @click="loadFixtures()" class="text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 px-3 py-1.5 rounded font-medium border border-blue-200">
+          🔄 Refresh Fixtures
         </button>
       </div>
     </div>
@@ -66,7 +65,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       
       <div x-show="loading" class="p-8 text-center text-gray-500">
-        Loading fixtures data...
+        Fetching live fixtures directly from FA Full-Time...
       </div>
 
       <div x-show="!loading && filteredFixtures.length === 0" class="p-8 text-center text-gray-500">
@@ -81,7 +80,6 @@
             <div class="md:w-1/4">
               <span class="inline-block px-2 py-0.5 text-xs font-semibold rounded bg-blue-100 text-blue-800 mb-1" x-text="fixture.league"></span>
               <div class="font-bold text-gray-800" x-text="fixture.date"></div>
-              <div class="text-xs text-gray-500" x-text="fixture.competition"></div>
             </div>
 
             <!-- Teams -->
@@ -107,31 +105,79 @@
   <script>
     function fixturesApp() {
       return {
-        apiUrl: 'https://utufixtures.damianconnolly.workers.dev', // Replace with Worker Endpoint
         loading: true,
         fixtures: [],
-        lastUpdated: null,
         selectedTeam: '',
         selectedLeague: '',
         selectedVenue: '',
 
-        async initData() {
-          await this.fetchData(false);
+        sources: [
+          {
+            league: 'BCFA Youth League',
+            url: 'https://fulltime.thefa.com/fixtures.html?selectedSeason=486141579&selectedClub=533106051&itemsPerPage=100'
+          },
+          {
+            league: 'Echo Youth League',
+            url: 'https://fulltime.thefa.com/fixtures.html?selectedSeason=939968858&selectedClub=861410336&itemsPerPage=100'
+          }
+        ],
+
+        cleanTeamName(name) {
+          if (!name) return 'Unknown';
+          return name.replace(/Upminster Town United/i, '').trim() || name;
         },
 
-        async fetchData(forceRefresh = false) {
+        async loadFixtures() {
           this.loading = true;
-          try {
-            const url = forceRefresh ? `${this.apiUrl}/api/refresh` : this.apiUrl;
-            const res = await fetch(url);
-            const data = await res.json();
-            this.fixtures = data.fixtures || [];
-            this.lastUpdated = data.updatedAt ? new Date(data.updatedAt).toLocaleString('en-GB') : 'Unknown';
-          } catch (e) {
-            console.error('Failed to load fixtures', e);
-          } finally {
-            this.loading = false;
+          this.fixtures = [];
+
+          for (const src of this.sources) {
+            try {
+              // Wrap fetch in a CORS proxy to bypass cross-origin browser restrictions
+              const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(src.url)}`;
+              const res = await fetch(proxyUrl);
+              const data = await res.json();
+              
+              if (data.contents) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.contents, 'text/html');
+                const rows = doc.querySelectorAll('tr');
+
+                rows.forEach((row, i) => {
+                  const cells = Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim());
+                  
+                  if (cells.length >= 3) {
+                    const rowText = cells.join(' ');
+                    if (rowText.toLowerCase().includes('upminster')) {
+                      const dateStr = cells[0] || 'TBC';
+                      const homeTeam = cells[1] || cells[2] || '';
+                      const timeOrScore = cells[2] || cells[3] || 'VS';
+                      const awayTeam = cells[3] || cells[4] || '';
+                      const venue = cells[5] || 'Ground TBC';
+
+                      const isHome = homeTeam.toLowerCase().includes('upminster');
+
+                      this.fixtures.push({
+                        id: `${src.league}-${i}-${dateStr}`,
+                        league: src.league,
+                        date: dateStr,
+                        homeTeam,
+                        awayTeam,
+                        timeOrScore,
+                        venue,
+                        upminsterTeam: isHome ? this.cleanTeamName(homeTeam) : this.cleanTeamName(awayTeam),
+                        isHome
+                      });
+                    }
+                  }
+                });
+              }
+            } catch (err) {
+              console.error(`Error loading ${src.league}:`, err);
+            }
           }
+
+          this.loading = false;
         },
 
         get uniqueTeams() {
