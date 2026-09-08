@@ -115,7 +115,6 @@
         selectedLeague: '',
         selectedVenue: '',
 
-        // EXACT WORKER ENDPOINT:
         workerApiUrl: 'https://utufixtures.damianconnolly.workers.dev',
 
         sources: [
@@ -142,8 +141,6 @@
           for (const src of this.sources) {
             try {
               const targetUrl = `${this.workerApiUrl}?url=${encodeURIComponent(src.url)}`;
-              console.log('Fetching via Worker:', targetUrl);
-
               const res = await fetch(targetUrl);
               
               if (!res.ok) {
@@ -155,40 +152,48 @@
               if (htmlText) {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlText, 'text/html');
-                const rows = doc.querySelectorAll('tr');
+
+                // Target table rows or fixture list item elements
+                const rows = doc.querySelectorAll('tr, .fixture-list-item, .fixture-row');
 
                 rows.forEach((row, i) => {
-                  const cells = Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim());
+                  const text = row.innerText || '';
+                  
+                  if (text.toLowerCase().includes('upminster')) {
+                    // Extract links for specific team names or fallback to cell text
+                    const teamLinks = Array.from(row.querySelectorAll('a')).map(a => a.innerText.trim()).filter(t => t.length > 2);
+                    const cellTexts = Array.from(row.querySelectorAll('td, div, span')).map(c => c.innerText.trim()).filter(Boolean);
 
-                  if (cells.length >= 3) {
-                    const rowText = cells.join(' ');
-                    if (rowText.toLowerCase().includes('upminster')) {
-                      const dateStr = cells[0] || 'TBC';
-                      const homeTeam = cells[1] || cells[2] || '';
-                      const timeOrScore = cells[2] || cells[3] || 'VS';
-                      const awayTeam = cells[3] || cells[4] || '';
-                      const venue = cells[5] || 'Ground TBC';
+                    const homeTeam = teamLinks[0] || cellTexts[1] || 'Upminster Town United';
+                    const awayTeam = teamLinks[1] || cellTexts[cellTexts.length - 1] || 'Opponent';
+                    
+                    const dateMatch = text.match(/\d{1,2}\/\d{1,2}\/\d{2,4}|\d{1,2}\s+[A-Za-z]{3}/);
+                    const dateStr = dateMatch ? dateMatch[0] : (cellTexts[0] || 'TBC');
+                    
+                    const scoreMatch = text.match(/\d{1,2}:\d{2}|\d+\s*-\s*\d+/);
+                    const timeOrScore = scoreMatch ? scoreMatch[0] : 'VS';
+                    
+                    const venue = cellTexts.find(c => c.toLowerCase().includes('park') || c.toLowerCase().includes('road') || c.toLowerCase().includes('ground') || c.toLowerCase().includes('playing')) || 'Ground TBC';
 
-                      const isHome = homeTeam.toLowerCase().includes('upminster');
+                    const isHome = homeTeam.toLowerCase().includes('upminster');
 
-                      this.fixtures.push({
-                        id: `${src.league}-${i}-${dateStr}`,
-                        league: src.league,
-                        date: dateStr,
-                        homeTeam,
-                        awayTeam,
-                        timeOrScore,
-                        venue,
-                        upminsterTeam: isHome ? this.cleanTeamName(homeTeam) : this.cleanTeamName(awayTeam),
-                        isHome
-                      });
-                    }
+                    this.fixtures.push({
+                      id: `${src.league}-${i}-${dateStr}`,
+                      league: src.league,
+                      date: dateStr,
+                      homeTeam,
+                      awayTeam,
+                      timeOrScore,
+                      venue,
+                      upminsterTeam: isHome ? this.cleanTeamName(homeTeam) : this.cleanTeamName(awayTeam),
+                      isHome
+                    });
                   }
                 });
               }
             } catch (err) {
               console.error(`Error loading ${src.league}:`, err);
-              this.errorMessage = `Failed to load fixtures: ${err.message}.`;
+              this.errorMessage = `Failed to parse fixtures: ${err.message}.`;
             }
           }
 
