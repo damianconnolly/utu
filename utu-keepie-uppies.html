@@ -100,28 +100,32 @@
         <div class="site-section">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-lg-12 mb-5">
                         <h2 class="section-title">UTU Keepie Uppies</h2>
                         <p><img src="images/keepie-uppies.png" alt="UTU Keepie Uppies" style="max-width: 400px; width: 100%;" align="center"></p>
                         <p>Welcome to UTU Keepie Uppies, a development group designed for primary school aged children (4-11) in Upminster to learn football skills and have fun. We offer a supportive environment where every child is encouraged to grow at their own pace.</p>
                         <p>Our sessions are structured by experienced and enthusiastic youth coaches, ensuring they are fun, educational, and provide a fantastic chance to make great friends. Our coaches use a variety of games and challenges to ensure young footballers fall in love with the game, learning skills and preparing themselves to confidently take part in football matches.</p>
-                        <p>As children develop their skills with Keepie Uppies, there may be opportunities to join existing Upminster Town United teams, or to form new ones from our Keepie Uppies cohorts. </p>
+                        <p>As children develop their skills with Keepie Uppies, there may be opportunities to join existing Upminster Town United teams, or to form new ones from our Keepie Uppies cohorts.</p>
 
                         <p>Keepie Uppie sessions will be starting this term - these will run on Saturday mornings in Upminster throughout school term time. We are currently gathering details of people who may be interested in joining our group. Please fill out the form below to register your interest.</p>
                         <p><a href="https://forms.gle/4aq9iwhYt6Ky43hS9" class="btn btn-primary" target="_blank">Register Interest</a></p>
                     </div>
                 </div>
-            </div>
-        </div>
 
                 <div class="row mt-4">
-                    <div class="col-md-12 col-lg-7 mb-5">
+                    <!-- Other Ways To Reach Us (Left Side) -->
+                    <div class="col-md-12 col-lg-4 mb-5 order-2 order-lg-1">
+                        <h3 class="mb-4">Other Ways to Reach Us</h3>
+                        <p>For general enquiries you can also email us directly at <a href="mailto:keepieuppies1@outlook.com">keepieuppies1@outlook.com</a></p>
+                    </div>
+
+                    <!-- Contact Form (Right Side) -->
+                    <div class="col-md-12 col-lg-7 offset-lg-1 mb-5 order-1 order-lg-2">
                         <h3 class="mb-4">Contact Keepie Uppies</h3>
 
                         <div id="contact-alert" class="alert d-none" role="alert"></div>
 
                         <form id="contact-form" novalidate>
-
                             <div class="row form-group">
                                 <div class="col-md-12 mb-3 mb-md-0">
                                     <label class="font-weight-bold" for="fullname">Full Name <span class="text-danger">*</span></label>
@@ -144,8 +148,7 @@
                             <div class="row form-group">
                                 <div class="col-md-12">
                                     <label class="font-weight-bold" for="message">Message <span class="text-danger">*</span></label>
-                                    <textarea name="message" id="message" cols="30" rows="5" class="form-control"
-                                              placeholder="Your message..." required></textarea>
+                                    <textarea name="message" id="message" cols="30" rows="5" class="form-control" placeholder="Your message..." required></textarea>
                                 </div>
                             </div>
 
@@ -156,18 +159,13 @@
                                     </button>
                                 </div>
                             </div>
-
                         </form>
                     </div>
-
-                    <div class="col-md-12 col-lg-4 offset-lg-1 mb-5">
-                        <h3 class="mb-4">Other Ways to Reach Us</h3>
-                        <p>For general enquiries you can also email us directly at <a href="mailto:keepieuppies1@outlook.com">upminstertownunitedfc@gmail.com</a></p>
-                    </div>
                 </div>
+            </div>
+        </div>
 
-
-                <script>
+        <script>
         (function () {
             var form = document.getElementById('contact-form');
             var submitBtn = document.getElementById('contact-submit');
